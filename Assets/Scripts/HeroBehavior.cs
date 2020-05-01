@@ -6,6 +6,9 @@ using System.Collections;
 /// This script controls the player 'hero' movement
 /// </summary>
 public class HeroBehavior : MonoBehaviour {
+  Canvas UI;
+  UIAPI uiapi;
+
   private bool useMouse = false;
 
   private Vector3 mousePosition;
@@ -19,10 +22,14 @@ public class HeroBehavior : MonoBehaviour {
   private const float kHeroRotateSpeed = 22f;
 
   // components
-  private Rigidbody2D rigidbody;
+  private Rigidbody2D RB;
+  private FireEgg fireEgg;
 
   void Start() {
-    rigidbody = GetComponent<Rigidbody2D>();
+    RB = GetComponent<Rigidbody2D>();
+    fireEgg = GetComponent<FireEgg>();
+    UI = GameObject.Find("Canvas").GetComponent<Canvas>();
+    uiapi = UI.GetComponent<UIAPI>();
   }
 
   /// <summary>
@@ -32,7 +39,7 @@ public class HeroBehavior : MonoBehaviour {
   /// </summary>
   private void FixedUpdate() {
     if (useMouse) {
-      rigidbody.velocity = new Vector2(0, 0);
+      RB.velocity = new Vector2(0, 0);
     }
     if (!useMouse) {
       UpdateMotion();
@@ -59,11 +66,11 @@ public class HeroBehavior : MonoBehaviour {
 
       // turn local left
       if (Input.GetKey(KeyCode.A)) {
-        rigidbody.MoveRotation(rigidbody.rotation + kHeroRotateSpeed * Time.deltaTime);
+        RB.MoveRotation(RB.rotation + kHeroRotateSpeed * Time.deltaTime);
       }
       // turn local right
       if (Input.GetKey(KeyCode.D)) {
-        rigidbody.MoveRotation(rigidbody.rotation + -kHeroRotateSpeed * Time.deltaTime);
+        RB.MoveRotation(RB.rotation + -kHeroRotateSpeed * Time.deltaTime);
       }
     }
 
@@ -81,14 +88,17 @@ public class HeroBehavior : MonoBehaviour {
     if (Input.GetKeyDown(KeyCode.M)) {
       if (useMouse) {
         useMouse = false;
+        uiapi.SetHeroMovement("WASD");
       } else {
         useMouse = true;
+        uiapi.SetHeroMovement("Mouse");
       }
     }
+
   }
 
   // updates the position of the player
   private void UpdateMotion() {
-    rigidbody.MovePosition(transform.position + (transform.TransformDirection(Vector3.up) * mHeroSpeed * HeroSpeedMultiplier * Time.deltaTime));
+    RB.MovePosition(transform.position + (transform.TransformDirection(Vector3.up) * mHeroSpeed * HeroSpeedMultiplier * Time.deltaTime));
   }
 }
